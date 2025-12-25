@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2 class="mb-4">Admin Dashboard</h2>
+
+        <!-- Analytics Section -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm text-center p-3">
+                    <h5 class="text-muted">Total Scans</h5>
+                    <h2 class="text-primary">{{ total_scans }}</h2>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card shadow-sm p-3">
+                    <h5 class="text-muted mb-3">Disease Distribution</h5>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                        {% for disease, count in disease_stats %}
+                        <span class="badge bg-info text-dark" style="font-size: 0.9rem;">
+                            {{ disease }}: {{ count }}
+                        </span>
+                        {% else %}
+                        <span class="text-muted">No data available.</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Left Column: Actions & Feedback -->
+            <div class="col-md-6">
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">System Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Update Machine Learning Model (.h5 file)</p>
+                        <form action="{{ url_for('main.train_model') }}" method="POST" enctype="multipart/form-data">
+                            <div class="input-group mb-3">
+                                <input type="file" class="form-control" name="model_file" required accept=".h5">
+                                <button type="submit" class="btn btn-warning">Upload & Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">User Feedback</h5>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 300px; overflow-y: auto;">
+                        <ul class="list-group list-group-flush">
+                            {% for fb in feedbacks %}
+                            <li class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <small class="text-muted">User #{{ fb.user_id }}</small>
+                                    <small class="text-muted">{{ fb.timestamp.strftime('%Y-%m-%d') }}</small>
+                                </div>
+                                <p class="mb-1">{{ fb.message }}</p>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item text-center text-muted">No feedback received.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: User Management -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">User Management</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Details</th>
+                                        <th>Role</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ user.name }}</strong><br>
+                                            <small class="text-muted">{{ user.email }}</small>
+                                        </td>
+                                        <td>
+                                            <form action="{{ url_for('main.update_role', user_id=user.id) }}"
+                                                method="POST">
+                                                <select name="role" class="form-select form-select-sm"
+                                                    onchange="this.form.submit()" style="width: auto;">
+                                                    <option value="Patient" {% if user.role=='Patient' %}selected{%
+                                                        endif %}>Patient</option>
+                                                    <option value="Doctor" {% if user.role=='Doctor' %}selected{% endif
+                                                        %}>Doctor</option>
+                                                    <option value="Admin" {% if user.role=='Admin' %}selected{% endif
+                                                        %}>Admin</option>
+                                                </select>
+                                            </form>
+                                        </td>
+                                        <td>
+                                            {% if user.id != current_user.id %}
+                                            <form action="{{ url_for('main.delete_user', user_id=user.id) }}"
+                                                method="POST" onsubmit="return confirm('Are you sure?');">
+                                                <button type="submit"
+                                                    class="btn btn-sm btn-outline-danger">Delete</button>
+                                            </form>
+                                            {% else %}
+                                            <span class="badge bg-secondary">You</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

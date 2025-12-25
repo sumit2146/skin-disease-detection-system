@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4">Feedback & Support</h2>
+                <p class="text-center text-muted mb-4">Have suggestion or found a bug? Let us know.</p>
+
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Your Message</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Submit Feedback</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

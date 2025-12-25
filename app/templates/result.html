@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="result-header">
+    <div>
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+            <span class="result-badge">Analysis Complete</span>
+            <span style="color: var(--text-muted);">{{ scan.timestamp.strftime('%B %d, %Y • %I:%M %p') }}</span>
+        </div>
+        <h1 class="disease-title" style="margin-bottom: 0;">{{ scan.disease_name }}</h1>
+    </div>
+    <a href="{{ url_for('main.download_report', scan_id=scan.id) }}" class="btn btn-outline">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Download Report
+    </a>
+</div>
+
+<div class="card mb-4" style="border: none; overflow: hidden;">
+    <div style="display: flex; gap: 3rem; align-items: flex-start; flex-wrap: wrap;">
+        <div style="flex: 0 0 300px;">
+            <img src="{{ url_for('static', filename='uploads/' + scan.image_path) }}"
+                style="width: 100%; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+        </div>
+        <div style="flex: 1;">
+            <div
+                style="display: inline-block; background: var(--primary-500); color: white; padding: 0.25rem 0.75rem; border-radius: var(--radius-md); font-weight: 600; margin-bottom: 1rem;">
+                Confidence: {{ scan.confidence }}%
+            </div>
+            <div style="margin-bottom: 1rem; color: var(--text-muted); font-size: 0.95rem;">
+                {% if scan.patient_age %}
+                <span style="margin-right: 1rem;"><strong>Age:</strong> {{ scan.patient_age }}</span>
+                {% endif %}
+                {% if scan.patient_gender %}
+                <span><strong>Gender:</strong> {{ scan.patient_gender }}</span>
+                {% endif %}
+            </div>
+            <h3 style="margin-bottom: 1rem; color: var(--gray-800);">About this condition</h3>
+            <p style="font-size: 1.1rem; color: var(--gray-600); line-height: 1.8;">{{ info.description }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="info-cards">
+    <div class="card info-card" style="border-top: 4px solid var(--primary-500);">
+        <h3 style="color: var(--primary-700);">
+            <span style="background: var(--primary-100); padding: 6px; border-radius: 6px;">🥗</span>
+            Dietary Advice
+        </h3>
+        <ul class="info-list">
+            {% for item in info.diet.eat %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+
+        <h4 style="margin-top: 1.5rem; margin-bottom: 0.75rem; color: #ef4444; font-size: 1rem;">Avoid</h4>
+        <ul class="info-list">
+            {% for item in info.diet.avoid %}
+            <li style="color: var(--gray-500);">{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card info-card" style="border-top: 4px solid var(--accent-500);">
+        <h3 style="color: var(--accent-600);">
+            <span style="background: var(--accent-50); padding: 6px; border-radius: 6px;">💊</span>
+            Treatment
+        </h3>
+        <ul class="info-list">
+            {% for item in info.medicine %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
